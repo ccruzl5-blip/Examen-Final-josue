@@ -1,0 +1,53 @@
+@startuml
+title Diagrama de Clases: Atletas API (Simplificado)
+
+skinparam componentStyle uml2
+
+
+
+package "com.guate.atletasreports.entity" as entity {
+    class Atleta <<(E,#ADD1B2) Entity>> {
+        - Long id
+        --
+        - String nombre
+        - Integer edad
+        - String disciplina
+        - String departamento
+    }
+}
+
+package "com.guate.atletasreports.repository" as repository {
+    interface AtletaRepository <<(R,#FFD700) JpaRepository>> {
+        + List<Atleta> findAll()
+        + Atleta save(Atleta atleta)
+    }
+    entity.Atleta --|> AtletaRepository : usa
+}
+
+
+
+package "com.guate.atletasreports.service" as service {
+    class AtletaService <<(S,#CCCCFF) Service>> {
+        - AtletaRepository atletaRepository
+        --
+        + Atleta saveAtleta(Atleta atleta)
+        + List<Atleta> findAllAtletas()
+        + List<Atleta> generateJsonReport()
+    }
+    AtletaService o-- repository.AtletaRepository : usa >
+}
+
+
+
+package "com.guate.atletasreports.controller" as controller {
+    class AtletaController <<(C,#FF6961) RestController>> {
+        - AtletaService atletaService
+        --
+        + saveAtleta(Atleta) : Atleta (POST /api/atletas)
+        + getAllAtletas() : List<Atleta> (GET /api/atletas)
+        + getAtletasJsonReport() : List<Atleta> (GET /api/atletas/reporte)
+    }
+    AtletaController o-- service.AtletaService : usa >
+}
+
+@enduml
